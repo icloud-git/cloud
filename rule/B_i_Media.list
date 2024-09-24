@@ -1,0 +1,24 @@
+#bilibili
+DOMAIN-SUFFIX,bilibili.com
+#DOMAIN,upos-hz-mirrorakam.akamaized.net
+DOMAIN-SUFFIX,biligame.com
+DOMAIN-SUFFIX,biliapi.net
+#DOMAIN-SUFFIX,bilivideo.com
+DOMAIN-SUFFIX,hdslb.com
+DOMAIN-SUFFIX,httpdns.bilivideo.com
+IP-CIDR,103.151.150.0/23
+IP-CIDR6,2001:df3:c680::/48
+
+# > 愛奇藝台灣站 & iQIYI
+DOMAIN-SUFFIX,iqiyi.com
+DOMAIN-SUFFIX,iq.com
+DOMAIN,cache.video.iqiyi.com
+DOMAIN,cache-video.iq.com
+DOMAIN,intl.iqiyi.com
+DOMAIN,intl-rcd.iqiyi.com
+DOMAIN,intl-subscription.iqiyi.com
+
+# > ACFUN
+# > ali-acfun-adaptive.pull.etoote.com | video流量
+DOMAIN-SUFFIX,acfun.cn
+DOMAIN-SUFFIX,api.kuaishouzt.com
