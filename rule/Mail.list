@@ -1,0 +1,16 @@
+# > Outlook
+DOMAIN,outlook.office365.com
+DOMAIN,smtp.office365.com
+DOMAIN,imap-mail.outlook.com
+DOMAIN,smtp-mail.outlook.com
+
+# > Protonmail
+DOMAIN-SUFFIX,protonmail.com
+
+# > Spark
+DOMAIN-SUFFIX,sparkmailapp.com
+DOMAIN-SUFFIX,app.smartmailcloud.com
+
+# > Yahoo
+DOMAIN-SUFFIX,mail.yahoo.com
+DOMAIN-SUFFIX,login.yahoo.com
