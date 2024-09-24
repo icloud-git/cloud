@@ -14,3 +14,6 @@ DOMAIN-SUFFIX,app.smartmailcloud.com
 # > Yahoo
 DOMAIN-SUFFIX,mail.yahoo.com
 DOMAIN-SUFFIX,login.yahoo.com
+
+# > Canary Mail
+DOMAIN-SUFFIX,canarymail.io
