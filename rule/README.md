@@ -1,2 +1,2 @@
 # Rule
-Communication.list - Whatsapp,Wire,Signal,Telegram,Instagram,Facebook
+Communication.list - Whatsapp,Wire,Signal,nicegram,Instagram,Facebook
