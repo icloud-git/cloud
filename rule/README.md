@@ -11,6 +11,16 @@ TW_domain.list - Dcard, cmail20, edu.tw, gov.tw, com.tw, org.tw
 JP.list - DMM, Dazn, niconico, telasa, Paravi, U-NEXT, Hulu Japan, Tver, Wowow, Fuji TV, Radiko, Karaoke@DAM, Game, music.jp, GYAO!, J
 On Demand, mgstage, mercari, 
 
+B_i_Media.list - bilibili, 愛奇藝台灣站 & iQIYI, ACFUN
+
+
+
+
+
+
+
+
+
 
 
 
