@@ -1,0 +1,118 @@
+# DMM
+DOMAIN-SUFFIX,dmm.com
+DOMAIN-SUFFIX,dmm.co.jp
+DOMAIN-SUFFIX,dmm-extension.com
+DOMAIN-SUFFIX,dmmapis.com
+DOMAIN-SUFFIX,videomarket.jp
+DOMAIN-SUFFIX,p-smith.com
+DOMAIN-SUFFIX,vmdash-cenc.akamaized.net
+DOMAIN-SUFFIX,img.vm-movie.jp
+DOMAIN-SUFFIX,bam.nr-data.net
+
+# Dazn
+DOMAIN-SUFFIX,control.kochava.com
+DOMAIN-SUFFIX,d151l6v8er5bdm.cloudfront.net
+DOMAIN-SUFFIX,d1sgwhnao7452x.cloudfront.net
+DOMAIN-SUFFIX,dazn-api.com
+DOMAIN-SUFFIX,dazn.com
+DOMAIN-SUFFIX,dazndn.com
+DOMAIN-SUFFIX,dc2-vodhls-perform.secure.footprint.net
+DOMAIN-SUFFIX,dca-ll-livedazn-dznlivejp.s.llnwi.net
+DOMAIN-SUFFIX,dcalivedazn.akamaized.net
+DOMAIN-SUFFIX,dcblivedazn.akamaized.net
+DOMAIN-SUFFIX,indazn.com
+DOMAIN-SUFFIX,indaznlab.com
+DOMAIN-SUFFIX,intercom.io
+DOMAIN-SUFFIX,logx.optimizely.com
+DOMAIN-SUFFIX,s.yimg.jp
+DOMAIN-SUFFIX,sentry.io
+
+# niconico
+DOMAIN-SUFFIX,dmc.nico
+DOMAIN-SUFFIX,nicovideo.jp
+DOMAIN-SUFFIX,nimg.jp
+DOMAIN-SUFFIX,socdm.com
+
+# telasa
+DOMAIN-SUFFIX,telasa.jp
+DOMAIN-SUFFIX,kddi-video.com
+DOMAIN-SUFFIX,videopass.jp
+DOMAIN-SUFFIX,d2lmsumy47c8as.cloudfront.net
+
+# Paravi
+DOMAIN-SUFFIX,paravi.jp
+
+# U-NEXT
+DOMAIN-SUFFIX,unext.jp
+DOMAIN-SUFFIX,nxtv.jp
+
+# Hulu Japan
+DOMAIN-SUFFIX,hulu.com
+DOMAIN-SUFFIX,huluad.com
+DOMAIN-SUFFIX,huluim.com
+DOMAIN-SUFFIX,hulustream.com
+DOMAIN-SUFFIX,happyon.jp
+DOMAIN-SUFFIX,hulu.jp
+DOMAIN-SUFFIX,hjholdings.jp
+DOMAIN-SUFFIX,streaks.jp
+DOMAIN-SUFFIX,yb.uncn.jp
+DOMAIN-SUFFIX,hulu.hb.omtrdc.net
+DOMAIN-SUFFIX,conviva.com
+DOMAIN-SUFFIX,imrworldwide.com
+DOMAIN-SUFFIX,tealiumiq.com
+DOMAIN-SUFFIX,tiqcdn.com
+DOMAIN-SUFFIX,microad.jp
+DOMAIN-SUFFIX,adsrvr.org
+DOMAIN-SUFFIX,adsmoloco.com
+DOMAIN-SUFFIX,yimg.jp
+DOMAIN-SUFFIX,webantenna.info
+DOMAIN-SUFFIX,usergram.info
+DOMAIN-SUFFIX,hjholdings.tv
+
+# Tver
+DOMAIN-SUFFIX,tver.jp
+DOMAIN-SUFFIX,edge.api.brightcove.com
+DOMAIN-SUFFIX,players.brightcove.net
+
+# Wowow
+DOMAIN-SUFFIX,wowow.co.jp
+
+# Fuji TV
+DOMAIN-SUFFIX,fujitv.co.jp
+DOMAIN-SUFFIX,stream.ne.jp
+
+# Radiko
+DOMAIN-SUFFIX,radiko.jp
+DOMAIN-SUFFIX,radionikkei.jp
+DOMAIN-SUFFIX,smartstream.ne.jp
+
+# Karaoke@DAM
+DOMAIN-SUFFIX,clubdam.com
+
+# Game
+DOMAIN-SUFFIX,cygames.jp
+DOMAIN-SUFFIX,konosubafd.jp
+DOMAIN-SUFFIX,colorfulpalette.org
+DOMAIN-SUFFIX,cds1.clubdam.com
+DOMAIN-SUFFIX,api.worldflipper.jp
+
+# music.jp
+DOMAIN-SUFFIX,music-book.jp
+DOMAIN-SUFFIX,overseaauth.music-book.jp
+
+# GYAO!
+DOMAIN-SUFFIX,yahoo.co.jp
+
+# J:com On Demand
+DOMAIN-SUFFIX,id.zaq.ne.jp
+
+
+DOMAIN-SUFFIX,mgstage.com
+DOMAIN-SUFFIX,mercari.com
+
+#Media
+DOMAIN-SUFFIX,skyperfectv.co.jp
+
+# DOMAIN-SUFFIX,stream.ne.jp
+DOMAIN-SUFFIX,codefi.networ
+DOMAIN-SUFFIX,fujitv.co.jp
