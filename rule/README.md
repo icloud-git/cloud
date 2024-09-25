@@ -19,8 +19,7 @@ TikTok_sea.list - ttwstatic.com
 
 cctv.list - CCTV, iOS, 咪咕视频, Youku, qq
 
-
-
+DouYin.list - douyin
 
 
 
