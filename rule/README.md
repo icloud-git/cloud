@@ -25,6 +25,7 @@ Defi.list - BSC, BSC node, ETH node, Polygon node, Optimism node, Arbitrum node,
 
 Crypto-Exchange.list - Binance, Bybit, Huobi, Bitmex, OKX, Pionex, bittrex, deribit, KYC, kucoin, Quppy, redotpay.com, cypherwallet.io, COINBASE, OTHER, offramp, Bitfinex
 
+Twitter.list - Twitter
 
 
 
