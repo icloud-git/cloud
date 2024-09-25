@@ -1,0 +1,72 @@
+# > BSC
+DOMAIN-SUFFIX,pancakeswap.finance
+DOMAIN-SUFFIX,pancakeswap.com
+DOMAIN-SUFFIX,venus.io
+DOMAIN-SUFFIX,autofarm.network
+DOMAIN-SUFFIX,acryptos.com
+DOMAIN-SUFFIX,bdollar.fi
+DOMAIN-SUFFIX,bearn.fi
+DOMAIN-SUFFIX,bakeryswap.org
+DOMAIN-SUFFIX,bscscan.com
+DOMAIN-SUFFIX,mydefipet.com
+DOMAIN-SUFFIX,yieldwatch.net
+DOMAIN-SUFFIX,apollox.com
+DOMAIN-SUFFIX,bsctools.xyz
+DOMAIN-SUFFIX,pancake-swap.workers.dev
+
+
+DOMAIN-SUFFIX,nodereal.io
+DOMAIN-SUFFIX,walletconnect.org
+DOMAIN-SUFFIX,walletlink.org
+
+# > BSC node
+DOMAIN-SUFFIX,defibit.io
+DOMAIN-SUFFIX,ninicoin.io
+DOMAIN-SUFFIX,bsc-dataseed.binance.org
+DOMAIN-SUFFIX,bsc-dataseed1.binance.org
+DOMAIN-SUFFIX,bsc-dataseed2.binance.org
+DOMAIN-SUFFIX,bsc-dataseed3.binance.org
+DOMAIN-SUFFIX,bsc-dataseed4.binance.org
+
+# > ETH node
+DOMAIN-SUFFIX,infura.io
+
+# > Polygon node
+DOMAIN-SUFFIX,polygon-rpc.com
+
+# > Optimism node
+DOMAIN-SUFFIX,optimism.io
+
+# > Arbitrum node
+DOMAIN-SUFFIX,arbitrum.io
+
+# > Terra node
+DOMAIN-SUFFIX,terra.dev
+
+# > SafePal
+DOMAIN-SUFFIX,isafepal.com
+DOMAIN-SUFFIX,thegragh.com
+DOMAIN-SUFFIX,walletconnect.org
+
+# > Serum
+DOMAIN-SUFFIX,projectserum.com
+DOMAIN-SUFFIX,bonfida.com
+DOMAIN-SUFFIX,oxygen.org
+
+# > defi
+DOMAIN-SUFFIX,defistation.io
+
+# > Tabtrader
+DOMAIN-SUFFIX,tabtrader.com
+
+# > Aptos
+DOMAIN-SUFFIX,aptoslabs.com
+DOMAIN-SUFFIX,hasura.app
+DOMAIN-SUFFIX,tracemove.io
+
+DOMAIN-SUFFIX,fixedfloat.com
+
+# > Cryptowatch
+DOMAIN-SUFFIX,cryptowat.ch
+
+DOMAIN-SUFFIX,blxrbdn.com
