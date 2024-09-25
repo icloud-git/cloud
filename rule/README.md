@@ -13,7 +13,7 @@ On Demand, mgstage, mercari,
 
 B_i_Media.list - bilibili, 愛奇藝台灣站 & iQIYI, ACFUN
 
-
+F1TV.list - F1TV-US
 
 
 
