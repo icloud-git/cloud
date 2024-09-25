@@ -1,0 +1,50 @@
+# REPO: https://github.com/blackmatrix7/ios_rule_script
+# https://github.com/lwd-temp/anti-ip-attribution/blob/main/rules.yaml
+
+DOMAIN-SUFFIX,douyin.com
+DOMAIN-SUFFIX,bytegecko.com
+
+
+DOMAIN-SUFFIX,amemv.com
+DOMAIN-SUFFIX,douyincdn.com
+DOMAIN-SUFFIX,douyinpic.com
+DOMAIN-SUFFIX,douyinstatic.com
+DOMAIN-SUFFIX,douyinvod.com
+DOMAIN-SUFFIX,idouyinvod.com
+DOMAIN-SUFFIX,ixigua.com
+DOMAIN-SUFFIX,ixiguavideo.com
+DOMAIN-SUFFIX,pstatp.com
+DOMAIN-SUFFIX,snssdk.com
+DOMAIN-SUFFIX,toutiao.com
+DOMAIN-SUFFIX,bytednsdoc.com
+DOMAIN-SUFFIX,bytegoofy.com
+DOMAIN-SUFFIX,byted-static.com
+
+DOMAIN-SUFFIX,ecombdapi.com
+DOMAIN-SUFFIX,ecombdimg.com
+DOMAIN-SUFFIX,ecombdstatic.com
+DOMAIN-SUFFIX,zijieapi.com
+
+
+
+IP-CIDR,221.204.0.0/15
+IP-CIDR,114.80.0.0/16
+IP-CIDR,163.181.35.0/24
+IP-CIDR,118.112.233.0/24
+
+#AS138699
+IP-CIDR,103.136.220.0/23	#TikTok SG	512
+IP-CIDR,103.136.220.0/24	#TikTok SG	256
+IP-CIDR,103.136.221.0/24	#TikTok SG	256
+IP-CIDR,103.136.222.0/24	#TikTok SG	256
+IP-CIDR,118.26.132.0/24	#TIKTOK PTE. LTD
+IP-CIDR,71.18.247.0/24	#Bytedance Inc.	256
+IP-CIDR,71.18.252.0/24	#Bytedance Inc.	256
+IP-CIDR,71.18.253.0/24	#Bytedance Inc.	256
+IP-CIDR,71.18.255.0/24
+
+
+
+# DOMAIN-SUFFIX,natdetection.onethingpcs.com
+# lf3-static.bytednsdoc.com
+# v5-dy-o-abtest.zjcdn.com
