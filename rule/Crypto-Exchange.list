@@ -1,0 +1,73 @@
+# > Binance
+DOMAIN-KEYWORD,binance
+DOMAIN-SUFFIX,bnbstatic.com
+DOMAIN-SUFFIX,bntrace.com
+DOMAIN-SUFFIX,cookielaw.org
+IP-CIDR,34.160.0.0/16,no-resolve
+
+# > Bybit
+DOMAIN-SUFFIX,bybit.com
+
+# > Huobi
+DOMAIN-SUFFIX,huobi.com
+DOMAIN-SUFFIX,huobi.com.do
+DOMAIN-SUFFIX,heco-scan.com
+DOMAIN-SUFFIX,hbfile.net
+DOMAIN-SUFFIX,hecoview.com
+DOMAIN-SUFFIX,hbabit.com
+
+# > Bitmex
+DOMAIN-SUFFIX,bitmex.com
+
+# > OKX
+DOMAIN-SUFFIX,okx.com
+DOMAIN-SUFFIX,d1w1p0smpsoh5j.cloudfront.net
+DOMAIN-SUFFIX,api.onesignal.com
+DOMAIN-SUFFIX,okx.com.cdn.cloudflare.net
+
+# > Pionex
+DOMAIN-SUFFIX,pionex.com
+DOMAIN-SUFFIX,thepinet.com
+
+# > bittrex
+DOMAIN-SUFFIX,bittrex.com
+
+# > deribit
+DOMAIN-SUFFIX,deribit.com
+
+# > KYC
+DOMAIN-SUFFIX,sumsub.com
+
+# > kucoin
+DOMAIN-SUFFIX,kucoin.com
+DOMAIN-SUFFIX,staticimg.com
+
+
+# > Quppy
+DOMAIN-SUFFIX,quppy.com
+
+# > redotpay.com
+#DOMAIN-SUFFIX,redotpay.com
+
+# > 
+DOMAIN-SUFFIX,cypherwallet.io
+
+# > COINBASE
+DOMAIN-SUFFIX,coinbase.com
+
+# > OTHER
+DOMAIN-SUFFIX,fvbank.us
+DOMAIN-SUFFIX,bitget.com
+
+# > offramp
+DOMAIN-SUFFIX,offramp.xyz
+DOMAIN-SUFFIX,slise.xyz
+DOMAIN-SUFFIX,li.quest
+DOMAIN-SUFFIX,dynamicauth.com
+DOMAIN-SUFFIX,dynamic-static-assets.com
+DOMAIN-SUFFIX,walletconnect.com
+
+
+
+# > Bitfinex
+DOMAIN-SUFFIX,bitfinex.com
