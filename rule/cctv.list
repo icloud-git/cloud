@@ -1,0 +1,22 @@
+#CCTV
+DOMAIN-SUFFIX,myalicdn.com
+DOMAIN-SUFFIX,cntv.cn
+DOMAIN-SUFFIX,liveinfo.ysp.cctv.cn
+# ldcctvwbcdbd.a.bdydns.com(data flow)
+# ldcctvwbcdtxy.liveplay.myqcloud.com(data flow)
+
+#iOS
+DOMAIN-SUFFIX,qvb.qcloud.com
+
+#咪咕视频
+DOMAIN-SUFFIX,webapi.miguvideo.com
+DOMAIN-SUFFIX,migu.cn
+
+#Youku
+DOMAIN-SUFFIX,youku.com
+
+# qq
+DOMAIN-SUFFIX,qq.com
+  
+# DOMAIN-SUFFIX,liveplay.myqcloud.com
+# DOMAIN-SUFFIX,cctv.com
