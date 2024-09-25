@@ -23,7 +23,7 @@ DouYin.list - douyin
 
 Defi.list - BSC, BSC node, ETH node, Polygon node, Optimism node, Arbitrum node, Terra node, SafePal, Serum, defi, Tabtrader, Aptos, Cryptowatch
 
-
+Crypto-Exchange.list - Binance, Bybit, Huobi, Bitmex, OKX, Pionex, bittrex, deribit, KYC, kucoin, Quppy, redotpay.com, cypherwallet.io, COINBASE, OTHER, offramp, Bitfinex
 
 
 
