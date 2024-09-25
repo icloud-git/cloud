@@ -21,6 +21,8 @@ cctv.list - CCTV, iOS, 咪咕视频, Youku, qq
 
 DouYin.list - douyin
 
+Defi.list - BSC, BSC node, ETH node, Polygon node, Optimism node, Arbitrum node, Terra node, SafePal, Serum, defi, Tabtrader, Aptos, Cryptowatch
+
 
 
 
