@@ -19,9 +19,13 @@ DOMAIN-SUFFIX,ip.yiove.com
 
 DOMAIN-SUFFIX,maxmind.com
 DOMAIN-SUFFIX,ip8.com
+
+# > Speedtest
 DOMAIN-SUFFIX,speedtest.net
 DOMAIN-SUFFIX,speedtest.cn
 DOMAIN-SUFFIX,ooklaserver.net
+DOMAIN-SUFFIX,speedtest.idv.tw
+
 DOMAIN-SUFFIX,ip138.com
 DOMAIN-SUFFIX,ip125.com
 
