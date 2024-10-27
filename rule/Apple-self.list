@@ -1,0 +1,6 @@
+#DOMAIN-SUFFIX,xp.apple.com,Apple,notification-text="Apple 軟體更新"
+
+DOMAIN-KEYWORD,apple-relay
+DOMAIN-SUFFIX,apple-relay.cloudflare.com
+DOMAIN,apple-relay.apple.com
+
