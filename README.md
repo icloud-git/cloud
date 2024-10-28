@@ -9,7 +9,7 @@ bash <(curl -s https://raw.githubusercontent.com/icloud-git/cloud/refs/heads/mai
 
 ### shadowsocks 2022
 ```
-
+bash <(curl -s https://raw.githubusercontent.com/icloud-git/cloud/refs/heads/main/script/ss2022.sh)
 ```
 
 ```
