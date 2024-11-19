@@ -1,0 +1,103 @@
+#!name=Ads01
+#!desc=Ads01
+
+[URL Rewrite]
+# ^https?:\/\/img\.4gamers\.com\.tw/ads-media.+ - reject
+^http://www\.feng\.com https://www.feng.com 302
+^https?://www.google.com.hk https://www.google.com 302
+^https?:\/\/(www.)?(g|google)\.cn https://www.google.com 302
+# AbeamTV Unlock header
+^https?:\/\/api\.abema\.io\/v\d\/ip\/check - reject
+
+(^https?:\/\/streamsb\.net\/js\/pop\.js) - reject
+(^https?:\/\/ssl\.p\.jwpcdn\.com\/player\/v\/(.+/polyfills\.webvtt\.js)) - reject
+(^https?:\/\/ssl\.p\.jwpcdn\.com\/player\/v\/(.+/provider\.cast\.js)) - reject
+(^https?:\/\/asianclub\.tv\/asset\/bann.js.+)(&.+) - reject
+(^https?:\/\/www\.google\.com\/afs\/ads.+) - reject
+(^https?:\/\/google\.com\/afs\/ads.+) - reject
+(^https?:\/\/www\.googleadservices\.com) - reject
+(^https?:\/\/googleadservices\.com) - reject
+((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)www\.google\.com\/gen_204.+) - reject
+((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)www\.google\.com\/gen_204\?atyp*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$]).+) - reject
+((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)i\.ytimg\.com\/gen.+) - reject
+((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(static-clst)\.avgle.com\/av\/([A-Za-z0-9_*+%!-]{0,100})\.([A-Za-z0-9_*+%!-]{0,100})) - reject
+(^https?:\/\/img\.subhd\.la\/back\/ad_emma\.png) - reject
+(^https?:\/\/img\.subhd\.la\/back\/ad.+) - reject
+(^https?:\/\/hk\.fd-api\.com\/api\/v5\/partnerships-ads-api)(.+) - reject
+((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)jdbimgs\.com\/zzs.+) - reject
+((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)dianying\.im\/[0-9].+) - reject
+((?:(?:https?|ftp|file):\/\/support\.streamjav\.)top\/api\/spots\/[-A-Z0-9+&@#\/%=~_|$?!:,.]*host=supjav.com\&ev.+) - reject
+
+#(?:(?:https?|ftp|file):\/\/|pb\.|lihkg\.com\/cdn-cgi\/bm\/cv.+) - reject
+#(?:(?:https?|ftp|file):\/\/|s\.|yimg\.com\/dy\/ads\/.+) - reject
+
+(^https?:\/\/(.*)\.jdbstatic\.com\/ads.+) - reject
+
+
+
+#Youtube
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.googlevideo\.com\/gen.+) - reject
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.youtube\.com\/youtubei\/v1\/player\/ad.+) - reject
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.youtube\.com\/api\/stats\/qoe.+) - reject
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.youtube\.com\/youtubei\/v1\/log_event.+) - reject
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.youtube\.com\/pagead.+) - reject
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.youtube\.com\/ptracking.+) - reject
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.google\.com\/pagead.+) - reject
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.google\.com\.([A-Za-z0-9_*+%!-]{0,100})/pagead.+) - reject
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.googleusercontent\.com\/proxy.+) - reject
+
+#((?:(?:https?|ftp|file):\/\/|www\.|ftp\.)([A-Za-z0-9_*+%!-]{0,100})\.googlevideo\.com\/.+&(oad|ctier)) - reject
+
+#lihkg
+((?:(?:https?|ftp|file):\/\/|www\.|ftp|s\.)([A-Za-z0-9_*+%!-]{0,100})\.yimg\.com\/dy\/ads.+) - reject
+
+#blockcast.it
+(^https?:\/\/cdnb\.blockcast\.it\/wp-content\/plugins\/advanced-ads.+) - reject
+(^https?:\/\/cdnb\.blockcast\.it\/wp-content\/plugins\/exactmetrics.+) - reject
+(^https?:\/\/cdni\.blockcast\.it\/wp-content\/uploads\/2022\/11\/02110351\/polo.+) - reject
+(^https?:\/\/cdni\.blockcast\.it\/wp-content\/uploads\/2022\/09\/20192008\/bito.+) - reject
+(^https?:\/\/cdni\.blockcast\.it\/wp-content\/uploads\/2020\/06\/29100702\/mica.+) - reject
+(^https?:\/\/cdni\.blockcast\.it\/wp-content\/uploads\/2022\/11\/02110351\/polo.+) - reject
+(^https?:\/\/cdni\.blockcast\.it\/wp-content\/uploads\/2020\/08\/07180026\/bin.+) - reject
+
+#Abmedia
+(^https?:\/\/abmedia\.io\/wp-content\/uploads\/2022\/11\/ACE.+) - reject
+(^https?:\/\/abmedia\.io\/wp-admin\/admin-ajax\.php\?action=achang.+) - reject
+(^https?:\/\/abmedia\.io\/wp-content\/uploads\/2022\/06\/1764259.+) - reject
+(^https?:\/\/abmedia\.io\/wp-content\/plugins\/popup.+) - reject
+(^https?:\/\/abmedia\.io\/wp-json\/pum.+) - reject
+(^https?:\/\/abmedia\.io\/wp-content\/uploads\/2022\/12\/ACE.+) - reject
+(^https?:\/\/abmedia\.io\/wp-content\/uploads\/2022\/12\/Banner.+) - reject
+(^https?:\/\/i0\.wp\.com\/abmedia\.io\/wp-content\/uploads\/2022\/11\/AC.+) - reject
+(^https?:\/\/i0\.wp\.com\/abmedia\.io\/wp-content\/uploads\/2022\/12\/AC.+) - reject
+(^https?:\/\/i0\.wp\.com\/abmedia\.io\/wp-content\/uploads\/2023\/01\/AC.+) - reject
+(^https?:\/\/i0\.wp\.com\/abmedia\.io\/wp-content\/uploads\/2022\/06\/1764259.+) - reject
+(^https?:\/\/i0\.wp\.com\/abmedia\.io\/wp-content\/uploads\/2022\/12\/Ban.+) - reject
+(^https?:\/\/zombit\.info\/wp-content\/uploads\/2022\/12\/%E5%.+) - reject
+(^https?:\/\/zombit\.info\/wp-content\/uploads\/2022\/12\/280x.+) - reject
+(^https?:\/\/zombit\.info\/wp-content\/uploads\/2023\/02\/0201.+) - reject
+(^https?:\/\/zombit\.info\/wp-content\/uploads\/2022\/12\/780x.+) - reject
+
+#the p bay
+(^https?:\/\/torrindex\.net\/images\/epv\/(.*).png) - reject
+
+#Yahoo
+(^https?:\/\/s\.yimg\.com\/uu\/api\/res\/(.*)\/zbUFNrHeUppYjmNEW23doQ.+) - reject
+(^https?:\/\/(.*)\.yahoo\.com\/_td_api\/beacon.+) - reject
+(^https?:\/\/(.*)\.yahoo\.com\/px\.gif.+) - reject
+(^https?:\/\/(.*)\.yimg\.com\/av\/curveball\/ads.+) - reject
+(^https?:\/\/(.*)\.yimg\.com\/aaq\/vzm.+) - reject
+(^https?:\/\/(.*)\.yimg\.com\/cx\/pv\/(.*)\.js) - reject
+(^https?:\/\/(.*)\.yimg\.com\/aaq\/wf\/w.+) - reject
+(^https?:\/\/(.*)\.yimg\.com\/rx\/martini.+) - reject
+(^https?:\/\/(.*)\.gemini\.yahoo\.com\/mbclk.+) - reject
+(^https?:\/\/(.*)\.beap\.gemini\.yahoo\.com\/mb.+) - reject
+(^https?:\/\/(.*)\.ssp\.yahoo\.com\/ad.+) - reject
+(^https?:\/\/(.*)\.yimg\.com\/rq\/darla.+) - reject
+(^https?:\/\/(.*)\.yimg\.com\/yr\/abunews.+) - reject
+(^https?:\/\/(.*)\.video\.yahoo\.com(.*)gemini-ad.+) - reject
+
+
+[MITM]
+hostname = %APPEND% *.4gamers.com.tw, *.google.com, *.ytimg.com, *.avgle.com, *.subhd.la, *.fd-api.com, *.google.com.hk, mozilla.cloudflare-dns.com, jdbimgs.com, dianying.im, *.yimg.com, *.lihkg.com, *.streamjav.top, lihkg.com, *.abema.tv, *.blockcast.it, abmedia.io, *.wp.com, zombit.info, *.akamaized.net, torrindex.net, *.jdbstatic.com, *.yimg.com, *.yahoo.com
+#*.youtube.com, *.googlevideo.com, *.googleusercontent.com, *.google.com.cn, *.g.cn
