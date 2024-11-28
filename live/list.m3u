@@ -1,3 +1,9 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="https://tv.iill.top/LOGO/Lelee21&douyin&logo" group-title="•抖音「游戏」",麻勒勒
+#EXTINF:-1 tvg-logo="https://tv.iill.top/LOGO/Lelee21&douyin&logo" group-title="抖音",麻勒勒
 https://live.iill.top/douyin/Lelee21
+
+#EXTINF:-1 tvg-logo="https://tv.iill.top/LOGO/786343624860&douyin&logo" group-title="抖音",网球空间网咖老张
+https://live.iill.top/douyin/786343624860
+
+#EXTINF:-1 tvg-logo="https://tv.iill.top/LOGO/BMF88888888&douyin&logo" group-title="抖音",仙人🌙
+https://live.iill.top/douyin/BMF88888888
