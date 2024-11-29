@@ -1,10 +1,10 @@
 #EXTM3U
 #EXT-X-STREAM-INF:BANDWIDTH=150000,RESOLUTION=416x234,CODECS="avc1.42e00a,mp4a.40.2"
-http://example.com/low/index.m3u8
+https://pull-l3.douyincdn.com/stage/stream-116286194584911954_sd.m3u8?auth_key=1733409292-0-0-27db5f0d91162e505a1cdc1a9a7b5be2&major_anchor_level=common
 #EXT-X-STREAM-INF:BANDWIDTH=240000,RESOLUTION=416x234,CODECS="avc1.42e00a,mp4a.40.2"
-http://example.com/lo_mid/index.m3u8
+https://pull-l3.douyincdn.com/stage/stream-116286194584911954.m3u8?auth_key=1733409292-0-0-ba65aa5d2f52a1ebb0de7396277b7e6c&major_anchor_level=common
 #EXT-X-STREAM-INF:BANDWIDTH=440000,RESOLUTION=416x234,CODECS="avc1.42e00a,mp4a.40.2"
-http://example.com/hi_mid/index.m3u8
+https://pull-l3.douyincdn.com/stage/stream-116286194584911954_ld.m3u8?auth_key=1733409292-0-0-4e88754f1971d03fe56fdb63bcfc74d8&major_anchor_level=common
 #EXT-X-STREAM-INF:BANDWIDTH=640000,RESOLUTION=640x360,CODECS="avc1.42e00a,mp4a.40.2"
 http://example.com/high/index.m3u8
 #EXT-X-STREAM-INF:BANDWIDTH=64000,CODECS="mp4a.40.5"
