@@ -1,4 +1,5 @@
 #EXTM3U
+#EXT-X-PLAYLIST-TYPE:VOD
 #EXT-X-STREAM-INF:
 http://pull-flv-q11.douyincdn.com/thirdgame/stream-404522037356266302_expld.flv?expire=1733491349\u0026sign=8251d4cc7501649c4d72add83d3324d8\u0026major_anchor_level=common
 #EXT-X-STREAM-INF:
