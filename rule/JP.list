@@ -116,3 +116,15 @@ DOMAIN-SUFFIX,skyperfectv.co.jp
 # DOMAIN-SUFFIX,stream.ne.jp
 DOMAIN-SUFFIX,codefi.networ
 DOMAIN-SUFFIX,fujitv.co.jp
+
+#判定原生ip
+DOMAIN-SUFFIX,minsoku.net
+DOMAIN-SUFFIX,on-velocity-flowtest.com
+
+#misskey.io
+DOMAIN-SUFFIX,misskey.io
+DOMAIN-SUFFIX,misskeyusercontent.jp
+
+
+
+
