@@ -125,6 +125,11 @@ DOMAIN-SUFFIX,on-velocity-flowtest.com
 DOMAIN-SUFFIX,misskey.io
 DOMAIN-SUFFIX,misskeyusercontent.jp
 
+# Yahoo JP
+DOMAIN-SUFFIX,yahooapis.jp
+DOMAIN-SUFFIX,yahoo.co.jp
+DOMAIN-SUFFIX,yimg.jp
+
 
 
 
