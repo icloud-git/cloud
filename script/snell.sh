@@ -249,10 +249,17 @@ show_config(){
         return 1
     fi
     
-    local config_port=$(grep -oP 'listen = [^:]*:\K\d+' ${CONF})
-    local config_psk=$(grep -oP 'psk = \K.*' ${CONF})
-    local config_obfs=$(grep -oP 'obfs = \K.*' ${CONF})
-    local config_obfs_host=$(grep -oP 'obfs-host = \K.*' ${CONF})
+    # 更可靠的配置解析方法
+    local config_port=$(grep "^listen" ${CONF} | sed -n 's/.*:\([0-9]\+\).*/\1/p')
+    local config_psk=$(grep "^psk" ${CONF} | sed 's/^psk = //')
+    local config_obfs=$(grep "^obfs[^-]" ${CONF} | sed 's/^obfs = //')
+    local config_obfs_host=$(grep "^obfs-host" ${CONF} | sed 's/^obfs-host = //')
+    
+    # 如果上面的方法失敗，嘗試備用方法
+    [[ -z "${config_port}" ]] && config_port=$(awk -F':' '/^listen/{print $NF}' ${CONF})
+    [[ -z "${config_psk}" ]] && config_psk=$(awk -F' = ' '/^psk/{print $2}' ${CONF})
+    [[ -z "${config_obfs}" ]] && config_obfs=$(awk -F' = ' '/^obfs[^-]/{print $2}' ${CONF})
+    [[ -z "${config_obfs_host}" ]] && config_obfs_host=$(awk -F' = ' '/^obfs-host/{print $2}' ${CONF})
     
     get_ip
     
