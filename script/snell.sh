@@ -9,7 +9,7 @@ export PATH
 #=================================================
 
 sh_ver="2.0.0"
-snell_ver="v5.0.0b1"
+snell_ver="v5.0.0b2"
 FOLDER="/etc/snell/"
 FILE="/usr/local/bin/snell-server"
 CONF="/etc/snell/config.conf"
