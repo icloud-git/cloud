@@ -9,9 +9,61 @@
 #   - 優化用戶界面
 #   - 增強錯誤處理
 #   - 加入快速狀態檢查
+#   - 支持鏡像站下載 (github.moeyy.xyz)
+#   - 新增命令行參數支持
 #
-# 使用: ./k.sh
+# 使用: ./k.sh [選項]
+# 選項:
+#   -cn, --mirror    強制使用鏡像站 (github.moeyy.xyz)
+#   -h, --help       顯示幫助信息
 #===============================================================================================
+
+# --- 全局變量 ---
+USE_MIRROR=false
+
+# --- 參數處理 ---
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -cn|--mirror)
+                USE_MIRROR=true
+                echo -e "${CYAN}✓ 已啟用鏡像站模式 (github.moeyy.xyz)${NC}"
+                shift
+                ;;
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            *)
+                echo -e "${RED}錯誤：未知參數 '$1'${NC}"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+}
+
+show_help() {
+    echo "Komari Agent 管理腳本 v6"
+    echo
+    echo "用法: $0 [選項]"
+    echo
+    echo "選項:"
+    echo "  -cn, --mirror    強制使用鏡像站 (github.moeyy.xyz)"
+    echo "  -h, --help       顯示此幫助信息"
+    echo
+    echo "示例:"
+    echo "  $0              # 正常啟動 (自動選擇最佳源)"
+    echo "  $0 -cn          # 強制使用鏡像站"
+    echo "  $0 --mirror     # 強制使用鏡像站"
+    echo
+    echo "快速使用:"
+    echo "  # 正常模式"
+    echo "  bash <(curl -fsSL https://raw.githubusercontent.com/icloud-git/cloud/refs/heads/main/script/k.sh)"
+    echo
+    echo "  # 鏡像模式"
+    echo "  bash <(curl -fsSL https://github.moeyy.xyz/https://raw.githubusercontent.com/icloud-git/cloud/refs/heads/main/script/k.sh) -cn"
+}
 
 # --- 設定 (請根據您的情況修改此處) ---
 AGENT_ENDPOINT="https://ping.080886.xyz"
@@ -281,18 +333,43 @@ install_or_update() {
     local short_version=${version//./}
     local filename="${AGENT_EXEC_NAME}-${short_version}"
     local download_url="https://github.com/${GITHUB_REPO}/releases/download/${version}/komari-agent-${arch}"
+    local mirror_url="https://github.moeyy.xyz/https://github.com/${GITHUB_REPO}/releases/download/${version}/komari-agent-${arch}"
     
     echo "系統架構: ${arch}"
-    echo "下載位址: ${download_url}"
     echo "目標檔案: ${AGENT_DIR}/${filename}"
     
     mkdir -p "$AGENT_DIR"
     echo -e "${YELLOW}正在下載 Agent...${NC}"
     
-    if ! curl -L --progress-bar -o "${AGENT_DIR}/agent.tmp" "$download_url"; then
-        echo -e "${RED}下載失敗！${NC}"
-        rm -f "${AGENT_DIR}/agent.tmp"
-        return
+    if [ "$USE_MIRROR" = true ]; then
+        # 強制使用鏡像站
+        echo -e "${CYAN}使用鏡像站下載...${NC}"
+        if curl -L --connect-timeout 15 --max-time 120 --progress-bar -o "${AGENT_DIR}/agent.tmp" "$mirror_url"; then
+            echo -e "${GREEN}從鏡像站下載成功！${NC}"
+        else
+            echo -e "${RED}鏡像站下載失敗！${NC}"
+            rm -f "${AGENT_DIR}/agent.tmp"
+            return
+        fi
+    else
+        # 自動選擇模式：先嘗試 GitHub，失敗後切換鏡像站
+        echo "嘗試從 GitHub 下載..."
+        if curl -L --connect-timeout 15 --max-time 120 --progress-bar -o "${AGENT_DIR}/agent.tmp" "$download_url"; then
+            echo -e "${GREEN}從 GitHub 下載成功！${NC}"
+        else
+            echo -e "${YELLOW}GitHub 下載失敗，自動切換到鏡像站...${NC}"
+            # 清理失敗的下載
+            rm -f "${AGENT_DIR}/agent.tmp"
+            
+            # 嘗試從鏡像站下載
+            if curl -L --connect-timeout 15 --max-time 120 --progress-bar -o "${AGENT_DIR}/agent.tmp" "$mirror_url"; then
+                echo -e "${GREEN}從鏡像站下載成功！${NC}"
+            else
+                echo -e "${RED}所有下載源均失敗！${NC}"
+                rm -f "${AGENT_DIR}/agent.tmp"
+                return
+            fi
+        fi
     fi
     
     local file_size=$(stat -c%s "${AGENT_DIR}/agent.tmp" 2>/dev/null || stat -f%z "${AGENT_DIR}/agent.tmp")
@@ -455,6 +532,11 @@ main_menu() {
         clear
         echo "=========================================="
         echo "      Komari Agent 管理腳本 v6"
+        if [ "$USE_MIRROR" = true ]; then
+            echo -e "        ${CYAN}(鏡像站模式)${NC}"
+        else
+            echo -e "        ${GREEN}(自動選擇模式)${NC}"
+        fi
         echo "=========================================="
         
         # 顯示狀態
@@ -524,4 +606,8 @@ main_menu() {
 
 # --- 腳本入口 ---
 check_root
+
+# 解析命令行參數
+parse_args "$@"
+
 main_menu
