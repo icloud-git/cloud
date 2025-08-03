@@ -326,12 +326,14 @@ install_or_update() {
     # 【v7 修復】優化版本號處理，移除點和連字符，例如 "1.0.3-fix1" -> "103fix1"
     local short_version=$(echo "${version}" | sed -e 's/\.//g' -e 's/-//g')
     local filename="${AGENT_EXEC_NAME}-${short_version}"
-    # 【v7 修復】修正下載資源的名稱，從 "komari-agent-" 改為 "komari-"
-    local download_url="https://github.com/${GITHUB_REPO}/releases/download/v${version}/komari-${arch}"
-    local mirror_url="https://github.moeyy.xyz/https://github.com/${GITHUB_REPO}/releases/download/v${version}/komari-${arch}"
-    
+
+    # 【v7 修復】修正下載 URL，移除版本號前的 "v" 前綴
+    local download_url="https://github.com/${GITHUB_REPO}/releases/download/${version}/komari-agent-${arch}"
+    local mirror_url="https://github.moeyy.xyz/https://github.com/${GITHUB_REPO}/releases/download/${version}/komari-agent-${arch}"
+
     echo "系統架構: ${arch}"
     echo "目標檔案: ${AGENT_DIR}/${filename}"
+    echo "下載 URL: ${download_url}"
     
     mkdir -p "$AGENT_DIR"
     echo -e "${YELLOW}正在下載 Agent...${NC}"
@@ -519,3 +521,8 @@ main_menu() {
 check_root
 parse_args "$@"
 main_menu
+
+
+
+
+
