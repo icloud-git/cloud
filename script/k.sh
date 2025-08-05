@@ -74,7 +74,7 @@ show_help() {
 }
 
 # --- 設定 (請根據您的情況修改此處) ---
-AGENT_ENDPOINT="https://ping.080886.xyz"
+AGENT_ENDPOINT="http://168.138.161.185:55555"
 
 # --- 常量 (通常無需修改) ---
 AGENT_DIR="$HOME/.komari-agent"
@@ -241,28 +241,40 @@ start_agent() {
         return; 
     fi
     
-    local cmd="nohup ${agent_executable} -e ${AGENT_ENDPOINT} -t ${AGENT_TOKEN} --disable-web-ssh --interval ${AGENT_INTERVAL}"
-    echo -e "${CYAN}執行命令: ${cmd}${NC}"
+    local cmd="${agent_executable} -e ${AGENT_ENDPOINT} -t ${AGENT_TOKEN} --disable-web-ssh --interval ${AGENT_INTERVAL}"
+    echo -e "${CYAN}執行命令: nohup ${cmd}${NC}"
     
     echo "--- Agent 啟動於 $(date) ---" > "$LOG_FILE"
     
-    ( $cmd >> "$LOG_FILE" 2>&1 & )
+    # 修復：使用更簡單可靠的後台啟動方式
+    nohup $cmd >> "$LOG_FILE" 2>&1 &
     local new_pid=$!
-    echo $new_pid > "$PID_FILE"
     
-    sleep 1 # 等待一下，讓進程穩定
-    
-    if ps -p $new_pid > /dev/null; then
-        echo -e "${GREEN}Agent 啟動命令已執行 (PID: $new_pid)。${NC}"
-        echo -e "${CYAN}正在顯示啟動日誌...${NC}"
-        echo
-        sleep 1
-        echo -e "${CYAN}--- 最近日誌 ---${NC}"
-        tail -20 "$LOG_FILE" 2>/dev/null || echo "無法讀取日誌"
-        echo
-        echo -e "${CYAN}提示：使用選項 'l' 查看完整即時日誌。${NC}"
+    # 確保 PID 有效
+    if [[ -n "$new_pid" && "$new_pid" =~ ^[0-9]+$ ]]; then
+        echo $new_pid > "$PID_FILE"
+        
+        sleep 2 # 等待進程穩定
+        
+        # 修復：檢查 PID 是否有效再使用 ps 命令
+        if ps -p "$new_pid" > /dev/null 2>&1; then
+            echo -e "${GREEN}Agent 啟動成功 (PID: $new_pid)。${NC}"
+            echo -e "${CYAN}正在顯示啟動日誌...${NC}"
+            echo
+            sleep 1
+            echo -e "${CYAN}--- 最近日誌 ---${NC}"
+            tail -20 "$LOG_FILE" 2>/dev/null || echo "無法讀取日誌"
+            echo
+            echo -e "${CYAN}提示：使用選項 'l' 查看完整即時日誌。${NC}"
+        else
+            echo -e "${RED}Agent 啟動失敗！進程未能正常啟動。${NC}"
+            echo -e "${CYAN}日誌內容：${NC}"
+            cat "$LOG_FILE"
+            rm -f "$PID_FILE"
+        fi
     else
-        echo -e "${RED}Agent 啟動失敗！請檢查日誌獲取詳細錯誤。${NC}"
+        echo -e "${RED}Agent 啟動失敗！無法獲取有效的進程 ID。${NC}"
+        echo -e "${CYAN}日誌內容：${NC}"
         cat "$LOG_FILE"
     fi
 }
