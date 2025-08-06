@@ -1,10 +1,16 @@
 #!/bin/bash
 
 #===============================================================================================
-# Komari Agent 非官方管理腳本 (優化版 v7 - 修復版)
+# Komari Agent 非官方管理腳本 (優化版 v8 - systemd 支持版)
 #
 # 作者: Your Name/Community (可以替換)
-# 日期: 2025-08-03
+# 日期: 2025-08-06
+#
+# v8 更新日誌:
+#   - 【新增】完整 systemd 服務支持，開機自啟動
+#   - 【新增】智能服務管理，自動選擇最佳管理方式
+#   - 【新增】綜合狀態監控，同時支持傳統和 systemd 方式
+#   - 【優化】增強故障恢復能力，自動重啟崩潰服務
 #
 # v7 更新日誌:
 #   - 【修復】修正因上游 Release 檔案命名變更導致的下載失敗問題 (komari-agent- -> komari-)。
@@ -52,7 +58,7 @@ parse_args() {
 }
 
 show_help() {
-    echo "Komari Agent 管理腳本 v7"
+    echo "Komari Agent 管理腳本 v8"
     echo
     echo "用法: $0 [選項]"
     echo
@@ -84,6 +90,10 @@ LOG_FILE="${AGENT_DIR}/agent.log"
 PID_FILE="${AGENT_DIR}/agent.pid"
 GITHUB_REPO="komari-monitor/komari-agent"
 DEFAULT_INTERVAL=20
+
+# --- systemd 服務相關變量 ---
+SERVICE_NAME="komari-agent"
+SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 
 # --- 顏色定義 ---
 GREEN='\033[0;32m'
@@ -166,15 +176,164 @@ get_agent_pid() {
     return 1
 }
 
-
 # 檢查 Agent 是否運行
 is_agent_running() {
     local pid=$(get_agent_pid)
     [ -n "$pid" ]
 }
 
+# 檢查是否支援 systemd
+check_systemd_support() {
+    if ! command -v systemctl >/dev/null 2>&1; then
+        return 1
+    fi
+    
+    if ! systemctl --version >/dev/null 2>&1; then
+        return 1
+    fi
+    
+    return 0
+}
+
+# 創建 systemd 服務文件
+create_systemd_service() {
+    echo -e "${YELLOW}正在創建 systemd 服務...${NC}"
+    
+    if ! check_systemd_support; then
+        echo -e "${RED}錯誤：此系統不支援 systemd${NC}"
+        return 1
+    fi
+    
+    load_config
+    if [[ -z "$AGENT_TOKEN" ]]; then 
+        echo -e "${RED}錯誤：Token 尚未設定，無法創建服務。請先安裝 Agent。${NC}"; 
+        return 1; 
+    fi
+    
+    local agent_executable=$(find "$AGENT_DIR" -type f -name "${AGENT_EXEC_NAME}-*" 2>/dev/null | head -1)
+    if ! [[ -x "$agent_executable" ]]; then 
+        echo -e "${RED}錯誤：找不到 Agent 執行檔。請先安裝 Agent。${NC}"; 
+        return 1; 
+    fi
+    
+    # 創建服務文件內容
+    local service_content="[Unit]
+Description=Komari Agent
+Documentation=https://github.com/komari-monitor/komari-agent
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=30
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=${USER}
+Group=$(id -gn)
+WorkingDirectory=${AGENT_DIR}
+ExecStart=${agent_executable} -e ${AGENT_ENDPOINT} -t ${AGENT_TOKEN} --disable-web-ssh --interval ${AGENT_INTERVAL}
+ExecReload=/bin/kill -HUP \$MAINPID
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+KillMode=mixed
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=komari-agent
+
+# 環境變量
+Environment=HOME=${HOME}
+Environment=USER=${USER}
+
+# 安全設定
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=${AGENT_DIR}
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+SecureBits=keep-caps
+
+[Install]
+WantedBy=multi-user.target"
+
+    # 寫入服務文件（需要 sudo）
+    echo "$service_content" | sudo tee "$SERVICE_FILE" > /dev/null
+    
+    if [[ $? -eq 0 ]]; then
+        echo -e "${GREEN}systemd 服務文件已創建：${SERVICE_FILE}${NC}"
+        
+        # 重載 systemd 並啟用服務
+        echo -e "${YELLOW}正在重載 systemd 配置...${NC}"
+        sudo systemctl daemon-reload
+        
+        echo -e "${YELLOW}正在啟用服務（開機自啟）...${NC}"
+        sudo systemctl enable "$SERVICE_NAME"
+        
+        echo -e "${GREEN}✓ 服務已啟用，將在開機時自動啟動${NC}"
+        echo -e "${CYAN}服務文件位置：${SERVICE_FILE}${NC}"
+        return 0
+    else
+        echo -e "${RED}創建服務文件失敗！請檢查 sudo 權限。${NC}"
+        return 1
+    fi
+}
+
+# 更新 systemd 服務配置
+update_systemd_service() {
+    echo -e "${YELLOW}正在更新 systemd 服務配置...${NC}"
+    
+    if [[ ! -f "$SERVICE_FILE" ]]; then
+        echo -e "${YELLOW}服務文件不存在，正在創建...${NC}"
+        create_systemd_service
+        return $?
+    fi
+    
+    # 停止服務
+    sudo systemctl stop "$SERVICE_NAME" 2>/dev/null
+    
+    # 重新創建服務文件
+    create_systemd_service
+    
+    if [[ $? -eq 0 ]]; then
+        echo -e "${GREEN}服務配置已更新${NC}"
+        read -p "是否立即啟動服務？(Y/n): " start_confirm
+        if [[ "${start_confirm,,}" != "n" ]]; then
+            start_systemd_service
+        fi
+    fi
+}
+
+# 移除 systemd 服務
+remove_systemd_service() {
+    echo -e "${YELLOW}正在移除 systemd 服務...${NC}"
+    
+    if ! check_systemd_support; then
+        echo -e "${RED}錯誤：此系統不支援 systemd${NC}"
+        return 1
+    fi
+    
+    # 停止並禁用服務
+    echo -e "${YELLOW}正在停止服務...${NC}"
+    sudo systemctl stop "$SERVICE_NAME" 2>/dev/null
+    
+    echo -e "${YELLOW}正在禁用服務...${NC}"
+    sudo systemctl disable "$SERVICE_NAME" 2>/dev/null
+    
+    # 移除服務文件
+    if [[ -f "$SERVICE_FILE" ]]; then
+        sudo rm -f "$SERVICE_FILE"
+        sudo systemctl daemon-reload
+        sudo systemctl reset-failed "$SERVICE_NAME" 2>/dev/null
+        echo -e "${GREEN}✓ systemd 服務已完全移除${NC}"
+    else
+        echo -e "${YELLOW}服務文件不存在${NC}"
+    fi
+}
+
+# 傳統方式停止 Agent
 stop_agent() {
-    echo -e "${YELLOW}正在停止 Agent...${NC}"
+    echo -e "${YELLOW}正在停止 Agent (傳統方式)...${NC}"
     
     local was_running=false
     local pid=$(get_agent_pid)
@@ -214,8 +373,9 @@ stop_agent() {
     fi
 }
 
+# 傳統方式啟動 Agent
 start_agent() {
-    echo -e "${YELLOW}正在啟動 Agent...${NC}"
+    echo -e "${YELLOW}正在啟動 Agent (傳統方式)...${NC}"
     
     if is_agent_running; then
         local current_pid=$(get_agent_pid)
@@ -244,19 +404,27 @@ start_agent() {
     local cmd="${agent_executable} -e ${AGENT_ENDPOINT} -t ${AGENT_TOKEN} --disable-web-ssh --interval ${AGENT_INTERVAL}"
     echo -e "${CYAN}執行命令: nohup ${cmd}${NC}"
     
-    echo "--- Agent 啟動於 $(date) ---" > "$LOG_FILE"
+    # 添加更詳細的啟動日誌
+    echo "=========================================" >> "$LOG_FILE"
+    echo "Agent 啟動於 $(date)" >> "$LOG_FILE"
+    echo "執行命令: $cmd" >> "$LOG_FILE"
+    echo "PID: 即將獲取" >> "$LOG_FILE"
+    echo "=========================================" >> "$LOG_FILE"
     
-    # 修復：使用更簡單可靠的後台啟動方式
+    # 使用更可靠的後台啟動方式
     nohup $cmd >> "$LOG_FILE" 2>&1 &
     local new_pid=$!
+    
+    # 記錄 PID 到日誌
+    echo "獲取到 PID: $new_pid" >> "$LOG_FILE"
     
     # 確保 PID 有效
     if [[ -n "$new_pid" && "$new_pid" =~ ^[0-9]+$ ]]; then
         echo $new_pid > "$PID_FILE"
         
-        sleep 2 # 等待進程穩定
+        sleep 3 # 等待進程穩定
         
-        # 修復：檢查 PID 是否有效再使用 ps 命令
+        # 檢查 PID 是否有效
         if ps -p "$new_pid" > /dev/null 2>&1; then
             echo -e "${GREEN}Agent 啟動成功 (PID: $new_pid)。${NC}"
             echo -e "${CYAN}正在顯示啟動日誌...${NC}"
@@ -265,29 +433,144 @@ start_agent() {
             echo -e "${CYAN}--- 最近日誌 ---${NC}"
             tail -20 "$LOG_FILE" 2>/dev/null || echo "無法讀取日誌"
             echo
-            echo -e "${CYAN}提示：使用選項 'l' 查看完整即時日誌。${NC}"
+            echo -e "${CYAN}提示：使用選項 'l' 查看完整即時日誌${NC}"
         else
             echo -e "${RED}Agent 啟動失敗！進程未能正常啟動。${NC}"
             echo -e "${CYAN}日誌內容：${NC}"
-            cat "$LOG_FILE"
+            tail -30 "$LOG_FILE"
             rm -f "$PID_FILE"
         fi
     else
         echo -e "${RED}Agent 啟動失敗！無法獲取有效的進程 ID。${NC}"
         echo -e "${CYAN}日誌內容：${NC}"
-        cat "$LOG_FILE"
+        tail -30 "$LOG_FILE"
     fi
 }
 
+# systemd 方式啟動服務
+start_systemd_service() {
+    echo -e "${YELLOW}正在通過 systemd 啟動 Agent...${NC}"
+    
+    if ! check_systemd_support; then
+        echo -e "${YELLOW}系統不支援 systemd，fallback 到傳統啟動方式...${NC}"
+        start_agent
+        return
+    fi
+    
+    if [[ ! -f "$SERVICE_FILE" ]]; then
+        echo -e "${YELLOW}服務文件不存在，正在創建...${NC}"
+        if ! create_systemd_service; then
+            echo -e "${YELLOW}創建失敗，fallback 到傳統啟動方式...${NC}"
+            start_agent
+            return
+        fi
+    fi
+    
+    # 先停止傳統方式啟動的進程
+    if is_agent_running; then
+        echo -e "${YELLOW}檢測到傳統方式啟動的進程，正在停止...${NC}"
+        stop_agent
+        sleep 2
+    fi
+    
+    echo -e "${YELLOW}正在啟動 systemd 服務...${NC}"
+    sudo systemctl start "$SERVICE_NAME"
+    sleep 3
+    
+    # 檢查服務狀態
+    if sudo systemctl is-active --quiet "$SERVICE_NAME"; then
+        echo -e "${GREEN}✓ Agent 服務啟動成功${NC}"
+        echo
+        echo -e "${CYAN}服務狀態：${NC}"
+        sudo systemctl status "$SERVICE_NAME" --no-pager -l --lines=5
+    else
+        echo -e "${RED}✗ Agent 服務啟動失敗${NC}"
+        echo
+        echo -e "${CYAN}錯誤日誌：${NC}"
+        sudo journalctl -u "$SERVICE_NAME" --no-pager -l -n 10
+        echo
+        echo -e "${YELLOW}嘗試 fallback 到傳統啟動方式...${NC}"
+        start_agent
+    fi
+}
+
+# systemd 方式停止服務
+stop_systemd_service() {
+    echo -e "${YELLOW}正在通過 systemd 停止 Agent...${NC}"
+    
+    if ! check_systemd_support; then
+        echo -e "${YELLOW}系統不支援 systemd，fallback 到傳統停止方式...${NC}"
+        stop_agent
+        return
+    fi
+    
+    local was_running=false
+    
+    # 停止 systemd 服務
+    if [[ -f "$SERVICE_FILE" ]] && sudo systemctl is-active --quiet "$SERVICE_NAME"; then
+        sudo systemctl stop "$SERVICE_NAME"
+        was_running=true
+    fi
+    
+    # 同時停止傳統方式啟動的進程
+    if is_agent_running; then
+        echo -e "${YELLOW}同時停止傳統方式啟動的進程...${NC}"
+        stop_agent
+        was_running=true
+    fi
+    
+    if $was_running; then
+        echo -e "${GREEN}✓ Agent 服務已停止${NC}"
+    else
+        echo -e "${BLUE}Agent 服務並未在執行中${NC}"
+    fi
+}
+
+# systemd 方式重啟服務
+restart_systemd_service() {
+    echo -e "${PURPLE}--- 重啟 Agent (systemd) ---${NC}"
+    
+    if ! check_systemd_support; then
+        restart_agent
+        return
+    fi
+    
+    if [[ ! -f "$SERVICE_FILE" ]]; then
+        echo -e "${YELLOW}服務文件不存在，使用傳統方式重啟...${NC}"
+        restart_agent
+        return
+    fi
+    
+    # 先停止所有相關進程
+    stop_systemd_service
+    sleep 2
+    
+    # 重啟 systemd 服務
+    echo -e "${YELLOW}正在重啟 systemd 服務...${NC}"
+    sudo systemctl restart "$SERVICE_NAME"
+    sleep 3
+    
+    if sudo systemctl is-active --quiet "$SERVICE_NAME"; then
+        echo -e "${GREEN}✓ Agent 服務重啟成功${NC}"
+        echo
+        sudo systemctl status "$SERVICE_NAME" --no-pager -l --lines=3
+    else
+        echo -e "${RED}✗ Agent 服務重啟失敗${NC}"
+        sudo journalctl -u "$SERVICE_NAME" --no-pager -l -n 10
+    fi
+}
+
+# 傳統方式重啟
 restart_agent() {
-    echo -e "${PURPLE}--- 重啟 Agent ---${NC}"
+    echo -e "${PURPLE}--- 重啟 Agent (傳統) ---${NC}"
     stop_agent
     sleep 2
     start_agent
 }
 
+# 傳統狀態檢查
 status_agent() {
-    echo -e "${CYAN}--- Agent 狀態檢查 ---${NC}"
+    echo -e "${CYAN}--- Agent 狀態檢查 (傳統) ---${NC}"
     
     if is_agent_running; then
         local pid=$(get_agent_pid)
@@ -312,6 +595,119 @@ status_agent() {
         else
             echo -e "${YELLOW}尚未配置${NC}"
         fi
+    fi
+}
+
+# 綜合狀態檢查（同時檢查 systemd 和傳統方式）
+status_comprehensive() {
+    echo -e "${CYAN}--- Agent 綜合狀態檢查 ---${NC}"
+    
+    local systemd_available=false
+    local systemd_running=false
+    local traditional_running=false
+    
+    # 檢查 systemd 狀態
+    if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+        systemd_available=true
+        echo -e "${CYAN}systemd 服務狀態：${NC}"
+        
+        if sudo systemctl is-active --quiet "$SERVICE_NAME"; then
+            systemd_running=true
+            echo -e "  狀態: ${GREEN}執行中${NC}"
+        else
+            echo -e "  狀態: ${RED}已停止${NC}"
+        fi
+        
+        echo -e "  開機自啟: $(sudo systemctl is-enabled "$SERVICE_NAME" 2>/dev/null || echo "disabled")"
+        echo -e "  服務文件: ${SERVICE_FILE}"
+        echo
+        
+        sudo systemctl status "$SERVICE_NAME" --no-pager -l --lines=5 2>/dev/null
+        echo
+    else
+        echo -e "${YELLOW}systemd 服務未配置${NC}"
+        echo
+    fi
+    
+    # 檢查傳統進程狀態
+    echo -e "${CYAN}傳統進程狀態：${NC}"
+    if is_agent_running; then
+        traditional_running=true
+        local pid=$(get_agent_pid)
+        echo -e "  狀態: ${GREEN}執行中${NC}"
+        echo -e "  PID: ${pid}"
+        
+        if command -v ps >/dev/null 2>&1; then
+            echo -e "  進程資訊:"
+            ps -p "$pid" -o pid,ppid,etime,pcpu,pmem,cmd --no-headers 2>/dev/null || echo "    無法獲取詳細資訊"
+        fi
+    else
+        echo -e "  狀態: ${RED}已停止${NC}"
+    fi
+    
+    # 配置資訊
+    echo
+    echo -e "${CYAN}配置資訊：${NC}"
+    if [ -f "$CONFIG_FILE" ]; then
+        load_config
+        echo -e "  Token: ${AGENT_TOKEN:0:8}...****"
+        echo -e "  上報間隔: ${AGENT_INTERVAL} 秒"
+        echo -e "  配置文件: ${CONFIG_FILE}"
+    else
+        echo -e "  ${YELLOW}尚未配置${NC}"
+    fi
+    
+    # 日誌資訊
+    echo
+    echo -e "${CYAN}日誌資訊：${NC}"
+    if [ -f "$LOG_FILE" ]; then
+        local log_size=$(stat -c%s "$LOG_FILE" 2>/dev/null || stat -f%z "$LOG_FILE" 2>/dev/null)
+        echo -e "  傳統日誌: ${LOG_FILE} (${log_size} bytes)"
+    fi
+    
+    if $systemd_available; then
+        echo -e "  systemd 日誌: journalctl -u $SERVICE_NAME"
+    fi
+    
+    # 總結和建議
+    echo
+    echo -e "${CYAN}狀態總結：${NC}"
+    if $systemd_running && $traditional_running; then
+        echo -e "  ${YELLOW}⚠️  同時檢測到 systemd 和傳統進程在運行，建議停止傳統進程${NC}"
+    elif $systemd_running; then
+        echo -e "  ${GREEN}✓ systemd 服務正常運行${NC}"
+    elif $traditional_running; then
+        echo -e "  ${GREEN}✓ 傳統進程正常運行${NC}"
+        if $systemd_available; then
+            echo -e "  ${CYAN}💡 建議遷移到 systemd 服務管理${NC}"
+        fi
+    else
+        echo -e "  ${RED}✗ 沒有檢測到運行中的 Agent${NC}"
+    fi
+}
+
+# 智能服務管理（自動選擇 systemd 或傳統方式）
+smart_start() {
+    if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+        start_systemd_service
+    else
+        start_agent
+    fi
+}
+
+smart_stop() {
+    if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+        stop_systemd_service
+    else
+        stop_agent
+    fi
+}
+
+smart_restart() {
+    if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+        restart_systemd_service
+    else
+        restart_agent
     fi
 }
 
@@ -374,7 +770,8 @@ install_or_update() {
     
     echo -e "${GREEN}下載成功 (檔案大小: ${file_size} bytes)。${NC}"
     
-    stop_agent
+    # 停止所有相關服務
+    smart_stop
     
     find "$AGENT_DIR" -type f -name "${AGENT_EXEC_NAME}-*" -exec rm {} \;
     
@@ -384,11 +781,17 @@ install_or_update() {
     echo -e "${GREEN}Agent 已成功安裝/更新到版本 ${version}！${NC}"
     
     if [[ "$is_update" == "install" ]]; then
-        start_agent
+        smart_start
     else
         read -p "是否立即啟動更新後的 Agent？(Y/n): " start_confirm
         if [[ "${start_confirm,,}" != "n" ]]; then
-            start_agent
+            # 更新後需要更新 systemd 服務
+            if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+                echo -e "${YELLOW}檢測到 systemd 服務，正在更新配置...${NC}"
+                update_systemd_service
+            else
+                smart_start
+            fi
         fi
     fi
 }
@@ -427,8 +830,15 @@ change_token() {
     AGENT_TOKEN="$new_token"
     save_config
     echo -e "${GREEN}Token 更新成功！${NC}"
-    read -p "是否立即重啟 Agent 以應用新設定？(Y/n): " restart_confirm
-    if [[ "${restart_confirm,,}" != "n" ]]; then restart_agent; fi
+    
+    # Token 更改後需要更新 systemd 服務
+    if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+        echo -e "${YELLOW}檢測到 systemd 服務，正在更新配置...${NC}"
+        update_systemd_service
+    else
+        read -p "是否立即重啟 Agent 以應用新設定？(Y/n): " restart_confirm
+        if [[ "${restart_confirm,,}" != "n" ]]; then smart_restart; fi
+    fi
 }
 
 change_interval() {
@@ -441,8 +851,15 @@ change_interval() {
     AGENT_INTERVAL="$new_interval"
     save_config
     echo -e "${GREEN}上報頻率更新為 ${new_interval} 秒！${NC}"
-    read -p "是否立即重啟 Agent 以應用新設定？(Y/n): " restart_confirm
-    if [[ "${restart_confirm,,}" != "n" ]]; then restart_agent; fi
+    
+    # 間隔更改後需要更新 systemd 服務
+    if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+        echo -e "${YELLOW}檢測到 systemd 服務，正在更新配置...${NC}"
+        update_systemd_service
+    else
+        read -p "是否立即重啟 Agent 以應用新設定？(Y/n): " restart_confirm
+        if [[ "${restart_confirm,,}" != "n" ]]; then smart_restart; fi
+    fi
 }
 
 update_agent() {
@@ -458,7 +875,11 @@ uninstall_agent() {
     echo -e "${RED}此操作不可還原！${NC}"
     read -p "您確定要繼續嗎？(y/N): " confirm
     if [[ "${confirm,,}" == "y" ]]; then 
-        stop_agent
+        # 完整刪除時也移除 systemd 服務
+        if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+            remove_systemd_service
+        fi
+        smart_stop
         rm -rf "$AGENT_DIR"
         echo -e "${GREEN}Komari Agent 已被徹底刪除。${NC}"
     else 
@@ -466,6 +887,7 @@ uninstall_agent() {
     fi
 }
 
+# 查看傳統日誌
 show_logs() {
     if [ -f "$LOG_FILE" ]; then
         echo -e "${CYAN}--- Agent 日誌 (按 Ctrl+C 退出) ---${NC}"
@@ -475,17 +897,60 @@ show_logs() {
     fi
 }
 
+# 查看 systemd 日誌
+show_systemd_logs() {
+    if ! check_systemd_support; then
+        echo -e "${YELLOW}系統不支援 systemd，顯示傳統日誌...${NC}"
+        show_logs
+        return
+    fi
+    
+    if [[ -f "$SERVICE_FILE" ]]; then
+        echo -e "${CYAN}--- Agent systemd 日誌 (按 Ctrl+C 退出) ---${NC}"
+        echo -e "${YELLOW}提示：使用 'journalctl -u $SERVICE_NAME' 查看完整日誌${NC}"
+        echo
+        sudo journalctl -u "$SERVICE_NAME" -f --no-pager
+    else
+        echo -e "${YELLOW}systemd 服務未配置，顯示傳統日誌...${NC}"
+        show_logs
+    fi
+}
+
 main_menu() {
     while true; do
         clear
         echo "=========================================="
-        echo -e "      Komari Agent 管理腳本 ${GREEN}v7${NC}"
+        echo -e "      Komari Agent 管理腳本 ${GREEN}v8${NC}"
         if [ "$USE_MIRROR" = true ]; then echo -e "        ${CYAN}(鏡像站模式)${NC}";
         else echo -e "        ${GREEN}(自動選擇模式)${NC}"; fi
         echo "=========================================="
         
-        if is_agent_running; then local pid=$(get_agent_pid); echo -e "      狀態: ${GREEN}執行中 (PID: $pid)${NC}";
-        else echo -e "      狀態: ${RED}已停止${NC}"; fi
+        # 智能狀態顯示
+        local systemd_status=""
+        local traditional_status=""
+        
+        if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+            if sudo systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+                systemd_status="${GREEN}systemd: 執行中${NC}"
+            else
+                systemd_status="${RED}systemd: 已停止${NC}"
+            fi
+        fi
+        
+        if is_agent_running; then 
+            local pid=$(get_agent_pid)
+            traditional_status="${GREEN}傳統: 執行中 (PID: $pid)${NC}"
+        else 
+            traditional_status="${RED}傳統: 已停止${NC}"
+        fi
+        
+        if [[ -n "$systemd_status" && -n "$traditional_status" ]]; then
+            echo -e "      狀態: $systemd_status | $traditional_status"
+        elif [[ -n "$systemd_status" ]]; then
+            echo -e "      狀態: $systemd_status"
+        else
+            echo -e "      狀態: $traditional_status"
+        fi
         
         if [ -f "$CONFIG_FILE" ]; then load_config; echo -e "      間隔: ${AGENT_INTERVAL} 秒"; fi
         
@@ -493,15 +958,25 @@ main_menu() {
         echo " 1. 安裝 Agent (首次使用)"
         echo " 2. 更改 Token"
         echo " 3. 更改上報頻率"
-        echo " 4. 重啟 Agent"
+        echo " 4. 重啟 Agent (智能選擇)"
         echo " 5. 更新 Agent 到最新版本"
         echo " 6. 完整刪除 (解除安裝)"
         echo "------------------------------------------"
-        echo " s. 檢查/啟動 Agent"
-        echo " t. 停止 Agent"
-        echo " x. 詳細狀態檢查"
-        echo " l. 查看日誌"
+        echo " s. 檢查/啟動 Agent (智能選擇)"
+        echo " t. 停止 Agent (智能選擇)"
+        echo " x. 綜合狀態檢查"
+        echo " l. 查看日誌 (傳統)"
         echo "------------------------------------------"
+        if check_systemd_support; then
+            echo " [systemd 服務管理]"
+            echo " 7. 創建/更新 systemd 服務"
+            echo " 8. 移除 systemd 服務"
+            echo " 9. 啟動服務 (systemd)"
+            echo " 0. 停止服務 (systemd)"
+            echo " r. 重啟服務 (systemd)"
+            echo " j. 查看日誌 (systemd)"
+            echo "------------------------------------------"
+        fi
         echo " q. 退出腳本"
         echo "=========================================="
         
@@ -511,15 +986,34 @@ main_menu() {
             1) install_agent ;;
             2) change_token ;;
             3) change_interval ;;
-            4) restart_agent ;;
+            4) smart_restart ;;
             5) update_agent ;;
             6) uninstall_agent ;;
+            7) create_systemd_service ;;
+            8) remove_systemd_service ;;
+            9) start_systemd_service ;;
+            0) stop_systemd_service ;;
             s|S) 
-                if is_agent_running; then echo -e "${GREEN}Agent 正在執行中。${NC}";
-                else echo -e "${YELLOW}Agent 已停止，正在嘗試啟動...${NC}"; start_agent; fi ;;
-            t|T) stop_agent ;;
-            x|X) status_agent ;;
+                if check_systemd_support && [[ -f "$SERVICE_FILE" ]]; then
+                    if sudo systemctl is-active --quiet "$SERVICE_NAME"; then
+                        echo -e "${GREEN}Agent 服務正在執行中 (systemd)。${NC}"
+                    else
+                        echo -e "${YELLOW}Agent 服務已停止，正在嘗試啟動...${NC}"
+                        start_systemd_service
+                    fi
+                else
+                    if is_agent_running; then 
+                        echo -e "${GREEN}Agent 正在執行中 (傳統)。${NC}"
+                    else 
+                        echo -e "${YELLOW}Agent 已停止，正在嘗試啟動...${NC}"
+                        start_agent
+                    fi
+                fi ;;
+            t|T) smart_stop ;;
+            x|X) status_comprehensive ;;
             l|L) show_logs ;;
+            j|J) show_systemd_logs ;;
+            r|R) restart_systemd_service ;;
             q|Q) echo -e "${GREEN}感謝使用 Komari Agent 管理腳本！${NC}"; exit 0 ;;
             *) echo -e "${RED}無效的輸入，請重試。${NC}" ;;
         esac
@@ -533,7 +1027,3 @@ main_menu() {
 check_root
 parse_args "$@"
 main_menu
-
-
-
-
