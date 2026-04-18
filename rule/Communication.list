@@ -15,6 +15,7 @@ DOMAIN-SUFFIX,nicegram.cloud
 
 # > instagram
 DOMAIN-SUFFIX,instagram.com
+DOMAIN-SUFFIX,cdninstagram.com
 
 # > facebook
 DOMAIN-SUFFIX,facebook.com
