@@ -71,3 +71,6 @@ DOMAIN-SUFFIX,walletconnect.com
 
 # > Bitfinex
 DOMAIN-SUFFIX,bitfinex.com
+
+
+DOMAIN-SUFFIX,api.sprig.com
