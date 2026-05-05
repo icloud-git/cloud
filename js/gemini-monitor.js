@@ -1,16 +1,20 @@
 /**
- * 監控 Gemini 連線節點
+ * Surge 節點監控腳本 - Gemini 專用
  */
 
-// 獲取當前請求的域名
-let host = $request.hostname;
+// 獲取當前請求使用的策略/節點名稱
+// 在 http-request 類型腳本中，$session.proxy 會返回 Surge 最終決定的節點名
+let policy = $session.proxy || "DIRECT (直連)";
 
-// 獲取 Surge 為此請求分配的決策路徑 (Policy)
-// $session 包含此請求的所有底層資訊
-let policy = $session.proxy ? $session.proxy : "直接連線 (DIRECT)";
+// 獲取訪問的 Host
+let host = $request.hostname || "gemini.google.com";
 
-// 彈出通知
-$notification.post("Gemini 連線監控", host, "使用節點: " + policy);
+// 發送通知
+$notification.post(
+  "Gemini 策略監控", 
+  `目標: ${host}`, 
+  `當前連線使用節點: ${policy}`
+);
 
-// 必須呼叫 $done() 以免請求被掛起
+// 腳本必須呼叫 $done() 以恢復請求執行
 $done({});
