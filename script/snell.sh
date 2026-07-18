@@ -5,10 +5,10 @@ export PATH
 #=================================================
 # System Required: Debian/Ubuntu
 # Description: Snell Server 管理腳本 (v5/v6 雙版本)
-# Version: 3.0.1
+# Version: 3.0.2
 #=================================================
 
-sh_ver="3.0.1"
+sh_ver="3.0.2"
 SNELL_V5_VER="v5.0.1"
 SNELL_V6_VER="v6.0.0b4"
 
@@ -323,7 +323,7 @@ write_config(){
         # v6 移除 obfs，改用 mode 參數
         cat > "${CONF}" << EOF
 [snell-server]
-listen = 0.0.0.0:${port}
+listen = 0.0.0.0:${port},[::]:${port}
 psk = ${psk}
 mode = default
 tfo = true
@@ -333,7 +333,7 @@ EOF
     else
         cat > "${CONF}" << EOF
 [snell-server]
-listen = 0.0.0.0:${port}
+listen = 0.0.0.0:${port},[::]:${port}
 psk = ${psk}
 obfs = http
 obfs-host = www.bing.com
