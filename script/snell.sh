@@ -318,10 +318,20 @@ generate_psk(){
 
 write_config(){
     echo -e "${Info} 正在生成配置文件 ${CONF}..."
-    local proto_ver
-    [[ "${current_ver_label}" == "v6" ]] && proto_ver=6 || proto_ver=5
 
-    cat > "${CONF}" << EOF
+    if [[ "${current_ver_label}" == "v6" ]]; then
+        # v6 移除 obfs，改用 mode 參數
+        cat > "${CONF}" << EOF
+[snell-server]
+listen = 0.0.0.0:${port}
+psk = ${psk}
+mode = default
+tfo = true
+mptcp = true
+version = 6
+EOF
+    else
+        cat > "${CONF}" << EOF
 [snell-server]
 listen = 0.0.0.0:${port}
 psk = ${psk}
@@ -329,8 +339,9 @@ obfs = http
 obfs-host = www.bing.com
 tfo = true
 mptcp = true
-version = ${proto_ver}
+version = 5
 EOF
+    fi
 
     echo -e "${Info} 配置文件寫入完成！"
 }
@@ -347,45 +358,75 @@ show_config(){
         return 1
     fi
 
-    local config_port config_psk config_obfs config_obfs_host proto_ver
+    local config_port config_psk proto_ver
     config_port=$(grep "^listen" "${CONF}" | sed -n 's/.*:\([0-9]\+\).*/\1/p')
-    config_psk=$(grep "^psk" "${CONF}" | sed 's/^psk = //')
-    config_obfs=$(grep "^obfs[^-]" "${CONF}" | sed 's/^obfs = //')
-    config_obfs_host=$(grep "^obfs-host" "${CONF}" | sed 's/^obfs-host = //')
-
     [[ -z "${config_port}" ]] && config_port=$(awk -F':' '/^listen/{print $NF}' "${CONF}")
+
+    config_psk=$(grep "^psk" "${CONF}" | sed 's/^psk = //')
     [[ -z "${config_psk}" ]] && config_psk=$(awk -F' = ' '/^psk/{print $2}' "${CONF}")
-    [[ -z "${config_obfs}" ]] && config_obfs=$(awk -F' = ' '/^obfs[^-]/{print $2}' "${CONF}")
-    [[ -z "${config_obfs_host}" ]] && config_obfs_host=$(awk -F' = ' '/^obfs-host/{print $2}' "${CONF}")
 
     proto_ver=$(grep "^version" "${CONF}" | awk -F' = ' '{print $2}')
     [[ -z "${proto_ver}" ]] && proto_ver="${current_ver_label//v/}"
 
     get_ip
 
-    echo -e "\n${Info} 當前 Snell Server ${current_ver_label} 配置信息："
-    echo -e "————————————————————————————————"
-    echo -e " 服務器地址: ${Green_font_prefix}${local_ip}${Font_color_suffix}"
-    echo -e " 端口      : ${Green_font_prefix}${config_port}${Font_color_suffix}"
-    echo -e " 密鑰      : ${Green_font_prefix}${config_psk}${Font_color_suffix}"
-    echo -e " 混淆      : ${Green_font_prefix}${config_obfs}${Font_color_suffix}"
-    echo -e " 混淆主機  : ${Green_font_prefix}${config_obfs_host}${Font_color_suffix}"
-    echo -e " 協議版本  : ${Green_font_prefix}${proto_ver}${Font_color_suffix}"
-    echo -e "————————————————————————————————"
+    if [[ "${current_ver_label}" == "v6" ]]; then
+        # v6：顯示 mode，無 obfs
+        local config_mode
+        config_mode=$(grep "^mode" "${CONF}" | awk -F' = ' '{print $2}')
+        [[ -z "${config_mode}" ]] && config_mode="default"
 
-    echo -e "\n${Info} Surge 配置示例："
-    echo -e "${Green_font_prefix}snell-${current_ver_label} = snell, ${local_ip}, ${config_port}, psk=${config_psk}, obfs=${config_obfs}, obfs-host=${config_obfs_host}, version=${proto_ver}${Font_color_suffix}"
+        echo -e "\n${Info} 當前 Snell Server v6 配置信息："
+        echo -e "————————————————————————————————"
+        echo -e " 服務器地址: ${Green_font_prefix}${local_ip}${Font_color_suffix}"
+        echo -e " 端口      : ${Green_font_prefix}${config_port}${Font_color_suffix}"
+        echo -e " 密鑰      : ${Green_font_prefix}${config_psk}${Font_color_suffix}"
+        echo -e " 模式      : ${Green_font_prefix}${config_mode}${Font_color_suffix}"
+        echo -e " 協議版本  : ${Green_font_prefix}${proto_ver}${Font_color_suffix}"
+        echo -e "————————————————————————————————"
 
-    echo -e "\n${Info} Clash 配置示例："
-    echo -e "${Green_font_prefix}- name: \"Snell-${current_ver_label}\""
-    echo -e "  type: snell"
-    echo -e "  server: ${local_ip}"
-    echo -e "  port: ${config_port}"
-    echo -e "  psk: ${config_psk}"
-    echo -e "  obfs-opts:"
-    echo -e "    mode: ${config_obfs}"
-    echo -e "    host: ${config_obfs_host}"
-    echo -e "  version: ${proto_ver}${Font_color_suffix}"
+        echo -e "\n${Info} Surge 配置示例："
+        echo -e "${Green_font_prefix}snell-v6 = snell, ${local_ip}, ${config_port}, psk=${config_psk}, version=${proto_ver}${Font_color_suffix}"
+
+        echo -e "\n${Info} Clash Meta 配置示例："
+        echo -e "${Green_font_prefix}- name: \"Snell-v6\""
+        echo -e "  type: snell"
+        echo -e "  server: ${local_ip}"
+        echo -e "  port: ${config_port}"
+        echo -e "  psk: ${config_psk}"
+        echo -e "  version: ${proto_ver}${Font_color_suffix}"
+    else
+        # v5：顯示 obfs/obfs-host
+        local config_obfs config_obfs_host
+        config_obfs=$(grep "^obfs[^-]" "${CONF}" | sed 's/^obfs = //')
+        [[ -z "${config_obfs}" ]] && config_obfs=$(awk -F' = ' '/^obfs[^-]/{print $2}' "${CONF}")
+        config_obfs_host=$(grep "^obfs-host" "${CONF}" | sed 's/^obfs-host = //')
+        [[ -z "${config_obfs_host}" ]] && config_obfs_host=$(awk -F' = ' '/^obfs-host/{print $2}' "${CONF}")
+
+        echo -e "\n${Info} 當前 Snell Server v5 配置信息："
+        echo -e "————————————————————————————————"
+        echo -e " 服務器地址: ${Green_font_prefix}${local_ip}${Font_color_suffix}"
+        echo -e " 端口      : ${Green_font_prefix}${config_port}${Font_color_suffix}"
+        echo -e " 密鑰      : ${Green_font_prefix}${config_psk}${Font_color_suffix}"
+        echo -e " 混淆      : ${Green_font_prefix}${config_obfs}${Font_color_suffix}"
+        echo -e " 混淆主機  : ${Green_font_prefix}${config_obfs_host}${Font_color_suffix}"
+        echo -e " 協議版本  : ${Green_font_prefix}${proto_ver}${Font_color_suffix}"
+        echo -e "————————————————————————————————"
+
+        echo -e "\n${Info} Surge 配置示例："
+        echo -e "${Green_font_prefix}snell-v5 = snell, ${local_ip}, ${config_port}, psk=${config_psk}, obfs=${config_obfs}, obfs-host=${config_obfs_host}, version=${proto_ver}${Font_color_suffix}"
+
+        echo -e "\n${Info} Clash 配置示例："
+        echo -e "${Green_font_prefix}- name: \"Snell-v5\""
+        echo -e "  type: snell"
+        echo -e "  server: ${local_ip}"
+        echo -e "  port: ${config_port}"
+        echo -e "  psk: ${config_psk}"
+        echo -e "  obfs-opts:"
+        echo -e "    mode: ${config_obfs}"
+        echo -e "    host: ${config_obfs_host}"
+        echo -e "  version: ${proto_ver}${Font_color_suffix}"
+    fi
 }
 
 # ── 生命週期 ──────────────────────────────────────
