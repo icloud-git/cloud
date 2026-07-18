@@ -5,10 +5,10 @@ export PATH
 #=================================================
 # System Required: Debian/Ubuntu
 # Description: Snell Server 管理腳本 (v5/v6 雙版本)
-# Version: 3.0.0
+# Version: 3.0.1
 #=================================================
 
-sh_ver="3.0.0"
+sh_ver="3.0.1"
 SNELL_V5_VER="v5.0.1"
 SNELL_V6_VER="v6.0.0b4"
 
