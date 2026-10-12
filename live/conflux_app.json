@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "name": "我的抖音直播清單",
+  "author": {
+    "name": "你的名字"
+  },
+  "updatedAt": "2026-10-12",
+  "description": "抖音直播主清單",
+  "sections": [],
+  "entries": [
+    {
+      "platform": "douyin",
+      "roomId": "V18001120800",
+      "name": "moto贤",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "geshouzhaoxin",
+      "name": "歌手赵鑫",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "dwqxss",
+      "name": "大湾区小师赛（粤小）",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "jcdss",
+      "name": "京城小师赛",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "hsxssqzmt213",
+      "name": "沪上小师赛（奇侦妙探）",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "dbxss1",
+      "name": "东北小师赛",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "hcxssmwzy0509",
+      "name": "杭城小师赛",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "59471320244",
+      "name": "白海波",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "jydaishi",
+      "name": "JY戴士（京城大师赛）",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "jclms1",
+      "name": "京城龙门赛",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "GT_DIVISION",
+      "name": "赛车运动部门",
+      "sections": []
+    },
+    {
+      "platform": "douyin",
+      "roomId": "74811688766",
+      "name": "懂车帝赛道志",
+      "sections": []
+    }
+  ]
+}
